@@ -2,18 +2,23 @@ $fn = 60;
 
 module arrow ( edge, depth, zoom ) {
     a = edge/zoom;
-    h = sqrt(3)*a/2;
+    h = sqrt(3)*a/2;    
     linear_extrude(depth, scale=zoom)
     polygon([[-h/3,-a/2], [-h/3, a/2], [h-h/3, 0]]);
 }
-module prism ( x, y, z_min, pitch, miter) {
+
+module prism ( x, y, z_min, pitch, miter, nubs=false) {
     h_cent = z_min-miter + (x-2*miter)*pitch/2;
+    if (nubs) {
+        translate([0,0,z_min/4.0])cube([x/4,y+0.5,z_min/2.0],true);
+    }
     hull()
     for ( a=[-x/2+miter, x/2-miter] )for ( b=[-y/2+miter, y/2-miter] ) {
         h = z_min + (a+(x/2-miter))*pitch - miter;
         translate([a, b, 0])cylinder(r=miter, h);
         translate([a, b, h])sphere(r=miter);
     }
+    
 }
 
 module diag (dist, height, h_offset, radius) {
@@ -22,8 +27,10 @@ module diag (dist, height, h_offset, radius) {
             cylinder(d=radius*2,h=height);
         }
 }
-module dpad (width, height, base, base_width, pitch, miter, ball_size, diag_dist,diag_height,diag_rad) {
+
+module dpad (width, height, base, base_width, pitch, miter, ball_size, diag_dist ,diag_height,diag_rad) {
     third = width/3;
+    
     
     difference(){
         union(){
@@ -34,22 +41,24 @@ module dpad (width, height, base, base_width, pitch, miter, ball_size, diag_dist
         resize([width/6, width/6, 2*miter])
             sphere(d=1);
     }
+    
     for ( i=[0:3] )
     rotate(i*90)translate([third,0])difference(){
-        prism(third, third, height, pitch, miter);
+        prism(third, third, height, pitch, miter, true);
         h_cent = height-miter + (third-2*miter)*pitch/2;
-        translate([0,0,h_cent])rotate([0,-atan(pitch)])arrow(width/6, miter, 5);
+        translate([0,0,h_cent])rotate([0,-atan(pitch)])arrow(width/6, miter, 2);
     }
     
     cylinder(d=base_width, h=base);
-    translate([0,0,0])sphere(r=ball_size);
+    translate([0,0,0])sphere(d=ball_size);
     
     if (diag_height > 0) {
-        diag(diag_dist,diag_height,base/2,diag_rad);
+        diag(diag_dist, diag_height, base/2, diag_rad);
     }
+    
 }
 
 //dpad(21, 6, 1.0, 27, 0.15, 0.75,5.5/2,7.5,0.5,1.5); //v3
 //dpad(21, 6.5, 1.0, 27, 0.15, 0.75,5.5/2,7.5,0.5,1.5); //v4
 //dpad(22, 6.5, 1.0, 27, 0.15, 0.75,5.5/2,7.5,1,1.5); //v5
-dpad(22, 6.5, 1.0, 27, 0.15, 0.75,5.5/2,7,0,1.5); //v6 it's actulaly better without cylinders!
+dpad(22, 6.5, 1.0, 26, 0.2, 0.75,5.5,10,1,1.5); //v6 it's actulaly better without cylinders!
