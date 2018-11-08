@@ -44,9 +44,12 @@ module dpad (width, height, base, base_width, pitch, miter, ball_size, diag_dist
     cylinder(d=base_width, h=base);
     translate([0,0,0])sphere(r=ball_size);
     
-    diag(diag_dist,diag_height,base/2,diag_rad);
+    if (diag_height > 0) {
+        diag(diag_dist,diag_height,base/2,diag_rad);
+    }
 }
 
 //dpad(21, 6, 1.0, 27, 0.15, 0.75,5.5/2,7.5,0.5,1.5); //v3
 //dpad(21, 6.5, 1.0, 27, 0.15, 0.75,5.5/2,7.5,0.5,1.5); //v4
-dpad(22, 6.5, 1.0, 27, 0.15, 0.75,5.5/2,7.5,1,1.5); //v5
+//dpad(22, 6.5, 1.0, 27, 0.15, 0.75,5.5/2,7.5,1,1.5); //v5
+dpad(22, 6.5, 1.0, 27, 0.15, 0.75,5.5/2,7,0,1.5); //v6 it's actulaly better without cylinders!
